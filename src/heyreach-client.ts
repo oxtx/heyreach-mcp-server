@@ -246,7 +246,7 @@ export class HeyReachClient {
 
   /** Get tags for a lead */
   async getLeadTags(profileUrl: string) {
-    return this.request("POST", "/lead/GetTags", { leadProfileUrl: profileUrl });
+    return this.request("POST", "/lead/GetTags", { ProfileUrl: profileUrl });
   }
 
   /** Add tags to a lead */
