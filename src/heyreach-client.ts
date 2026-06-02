@@ -235,16 +235,23 @@ export class HeyReachClient {
     return this.request("POST", "/inbox/SendMessage", input);
   }
 
-  // ─── Analytics ─────────────────────────────────────────────────────
+  // ─── Analytics / Stats ──────────────────────────────────────────────
 
-  /** Get overall stats */
-  async getOverallStats(input?: GetStatsInput) {
-    return this.request("POST", "/analytics/GetOverallStats", input || {});
+  /** Get overall stats (daily breakdown + totals) */
+  async getOverallStats(input: GetStatsInput) {
+    return this.request("POST", "/stats/GetOverallStats", input);
   }
 
-  /** Get campaign stats */
-  async getCampaignStats(campaignId: number) {
-    return this.request("GET", "/analytics/GetCampaignStats", undefined, { campaignId });
+  // ─── Lead Tags ────────────────────────────────────────────────────────
+
+  /** Get tags for a lead */
+  async getLeadTags(profileUrl: string) {
+    return this.request("POST", "/lead/GetTags", { leadProfileUrl: profileUrl });
+  }
+
+  /** Add tags to a lead */
+  async addLeadTags(profileUrl: string, tags: string[]) {
+    return this.request("POST", "/lead/AddTags", { leadProfileUrl: profileUrl, tags });
   }
 
   // ─── API Key Validation ────────────────────────────────────────────
@@ -352,8 +359,8 @@ export interface SendMessageInput {
 }
 
 export interface GetStatsInput {
+  accountIds: number[];
   campaignIds?: number[];
-  accountIds?: number[];
   startDate?: string;
   endDate?: string;
 }

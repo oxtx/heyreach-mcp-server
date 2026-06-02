@@ -439,6 +439,50 @@ server.tool(
   }
 );
 
+// ─── Analytics / Stats ────────────────────────────────────────────────────
+
+server.tool(
+  "get_overall_stats",
+  "Get overall performance stats (daily breakdown + totals) for given accounts and optionally filtered by campaigns. Returns connections sent/accepted, messages, replies, InMails, reply rates, etc.",
+  {
+    accountIds: z.array(z.number()).describe("LinkedIn sender account IDs (required)"),
+    campaignIds: z.array(z.number()).optional().describe("Filter by campaign IDs (optional)"),
+    startDate: z.string().optional().describe("Start date ISO string (optional)"),
+    endDate: z.string().optional().describe("End date ISO string (optional)"),
+  },
+  async (input) => {
+    const result = await client.getOverallStats(input);
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+// ─── Lead Tags ───────────────────────────────────────────────────────────────
+
+server.tool(
+  "get_lead_tags",
+  "Get all tags assigned to a specific lead by their LinkedIn profile URL",
+  {
+    profileUrl: z.string().describe("LinkedIn profile URL of the lead"),
+  },
+  async ({ profileUrl }) => {
+    const result = await client.getLeadTags(profileUrl);
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "add_lead_tags",
+  "Add tags to a lead by their LinkedIn profile URL. The lead must exist in at least one list.",
+  {
+    profileUrl: z.string().describe("LinkedIn profile URL of the lead"),
+    tags: z.array(z.string()).describe("Array of tag names to add"),
+  },
+  async ({ profileUrl, tags }) => {
+    const result = await client.addLeadTags(profileUrl, tags);
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
 // ─── Start Server ────────────────────────────────────────────────────────────
 
 async function main() {

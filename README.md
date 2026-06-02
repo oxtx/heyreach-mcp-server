@@ -11,7 +11,7 @@ A Model Context Protocol (MCP) server providing full API coverage for [HeyReach]
 - **LinkedIn Accounts** — View connected senders
 - **Inbox** — Read conversations and send messages
 
-## Available Tools (23 total)
+## Available Tools (26 total)
 
 | Tool | Description |
 |------|-------------|
@@ -38,6 +38,9 @@ A Model Context Protocol (MCP) server providing full API coverage for [HeyReach]
 | `get_all_linkedin_accounts` | List connected senders |
 | `get_conversations` | Read inbox conversations |
 | `send_message` | Send a LinkedIn message |
+| `get_overall_stats` | Get performance stats (daily + totals) |
+| `get_lead_tags` | Get tags for a lead |
+| `add_lead_tags` | Add tags to a lead |
 
 ## Installation
 
