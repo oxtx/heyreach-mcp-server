@@ -99,12 +99,19 @@ server.tool(
   
 Node types for sequence: CONNECTION_REQUEST, MESSAGE, INMAIL, LIKE_POST, CHECK_IS_CONNECTION, CHECK_IS_OPEN_PROFILE, SEND_LEAD_TO_INSTANTLY, SEND_LEAD_TO_SMARTLEAD, END.
 
+Payload fields:
+- CONNECTION_REQUEST: { messages: [string], fallbackMessage: string, toBeWithdrawnAfterDays?: number } (messages array can contain one empty string for no note)
+- MESSAGE: { messages: [string], fallbackMessage: string } (messages is array with your message text, fallbackMessage is used when personalization fails)
+- INMAIL: { subject: string, messages: [string], fallbackMessage: string }
+- LIKE_POST: {} (no payload needed)
+- END: no payload needed
+
 Sequence rules:
 - Every path must terminate with an END node
 - CONNECTION_REQUEST, CHECK_IS_CONNECTION, CHECK_IS_OPEN_PROFILE must have both conditionalNode and unconditionalNode
-- All other non-END nodes must have unconditionalNode set (no conditionalNode)
+- MESSAGE nodes must have both conditionalNode (replied) and unconditionalNode (no reply)
 - actionDelay: number of units to wait. Must be at least 3 hours between action nodes (use actionDelayUnit: "DAY" with value >= 1 for safety)
-- actionDelayUnit: "HOUR" or "DAY" (required)
+- actionDelayUnit: "HOUR" or "DAY" (required on every node including END)
 - END nodes after a conditional (replied) path can use actionDelay: 0, actionDelayUnit: "HOUR"
 - END nodes after unconditional (no reply) path should use actionDelay >= 1, actionDelayUnit: "DAY"`,
   {
@@ -160,16 +167,17 @@ server.tool(
 Node types: CONNECTION_REQUEST, MESSAGE, INMAIL, LIKE_POST, CHECK_IS_CONNECTION, CHECK_IS_OPEN_PROFILE, SEND_LEAD_TO_INSTANTLY, SEND_LEAD_TO_SMARTLEAD, END.
 
 Payload fields:
-- CONNECTION_REQUEST: { message?: string } (max 300 chars, optional)
-- MESSAGE: { message: string } (required)
-- INMAIL: { subject: string, message: string }
+- CONNECTION_REQUEST: { messages: [string], fallbackMessage: string, toBeWithdrawnAfterDays?: number } (messages array can contain one empty string for no note)
+- MESSAGE: { messages: [string], fallbackMessage: string } (messages is array with your message text, fallbackMessage is used when personalization fails)
+- INMAIL: { subject: string, messages: [string], fallbackMessage: string }
 - LIKE_POST: {} (no payload needed)
 
 Rules:
 - Every path must end with END node
 - CONNECTION_REQUEST/CHECK_IS_CONNECTION/CHECK_IS_OPEN_PROFILE need both conditionalNode + unconditionalNode
-- Other non-END nodes need only unconditionalNode
-- actionDelay: 0-100 days`,
+- MESSAGE nodes need both conditionalNode (replied) + unconditionalNode (no reply)
+- actionDelay: 0-100 days
+- actionDelayUnit: "HOUR" or "DAY" (required on every node including END)`,
   {
     campaignId: z.number().describe("The campaign ID"),
     sequence: z.any().describe("The full sequence tree (PublicSequenceNodeDto)"),

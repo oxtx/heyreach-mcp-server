@@ -310,6 +310,7 @@ export interface CampaignScheduleDto {
 export interface SequenceNodeDto {
   nodeType: string;
   actionDelay?: number;
+  actionDelayUnit?: string;
   payload?: Record<string, unknown>;
   unconditionalNode?: SequenceNodeDto;
   conditionalNode?: SequenceNodeDto;
