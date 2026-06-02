@@ -129,13 +129,13 @@ Use create_campaign with:
     nodeType: "CONNECTION_REQUEST",
     actionDelay: 0,
     actionDelayUnit: "HOUR",
-    payload: { messages: ["Hi {FIRST_NAME}, I'd love to connect!"] },
+    payload: { messages: ["Hi {FIRST_NAME}, I'd love to connect!"], fallbackMessage: "Hi, I'd love to connect!" },
     conditionalNode: {
       nodeType: "MESSAGE",
       actionDelay: 1,
       actionDelayUnit: "DAY",
       payload: {
-        messages: ["Thanks for connecting! I wanted to share..."],
+        messages: ["Thanks for connecting, {FIRST_NAME}! I wanted to share..."],
         fallbackMessage: "Thanks for connecting! I wanted to share..."
       },
       conditionalNode: { nodeType: "END", actionDelay: 0, actionDelayUnit: "HOUR" },
@@ -200,6 +200,18 @@ npx heyreach-mcp-campaign --api-key=your_key_here
 | `SEND_LEAD_TO_INSTANTLY` | Export to Instantly | No |
 | `SEND_LEAD_TO_SMARTLEAD` | Export to Smartlead | No |
 | `END` | Terminal node | N/A |
+
+### Payload Format
+
+| Node Type | Payload |
+|-----------|---------|
+| `CONNECTION_REQUEST` | `{ messages: ["note text"], fallbackMessage: "fallback", toBeWithdrawnAfterDays?: number }` — use `[""]` for no note |
+| `MESSAGE` | `{ messages: ["message text"], fallbackMessage: "used when personalization fails" }` |
+| `INMAIL` | `{ subject: "subject", messages: ["body"], fallbackMessage: "fallback body" }` |
+| `LIKE_POST` | `{}` (no payload needed) |
+| `END` | no payload needed |
+
+> **Important:** `messages` is always an array (even for a single message). `fallbackMessage` is the version used when personalization variables like `{FIRST_NAME}` can't be resolved.
 
 ### Sequence Rules
 
