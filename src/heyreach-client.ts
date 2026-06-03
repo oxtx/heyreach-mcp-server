@@ -151,7 +151,31 @@ export class HeyReachClient {
 
   /** Add leads to campaign (v2) */
   async addLeadsToCampaignV2(input: AddLeadsToCampaignV2Input) {
-    return this.request("POST", "/campaign/AddLeadsToCampaignV2", input);
+    // API requires AccountLeadPairs format with PascalCase fields
+    // Get the campaign to find assigned account IDs
+    const campaign = (await this.getCampaignById(input.campaignId)) as any;
+    const accountId = campaign?.campaignAccountIds?.[0];
+    if (!accountId) {
+      throw new Error("Campaign has no sender accounts assigned. Please assign an account first.");
+    }
+
+    const accountLeadPairs = input.leads.map((lead) => ({
+      AccountId: accountId,
+      Lead: {
+        ProfileUrl: lead.profileUrl,
+        FirstName: lead.firstName,
+        LastName: lead.lastName,
+        Email: lead.email,
+        Company: lead.company,
+        Position: lead.position,
+        CustomFields: lead.customFields,
+      },
+    }));
+
+    return this.request("POST", "/campaign/AddLeadsToCampaignV2", {
+      CampaignId: input.campaignId,
+      AccountLeadPairs: accountLeadPairs,
+    });
   }
 
   /** Get lead by profile URL — NOTE: may not be available on all API plans */
@@ -176,7 +200,7 @@ export class HeyReachClient {
 
   /** Stop a lead in a campaign */
   async stopLeadInCampaign(campaignId: number, profileUrl: string) {
-    return this.request("POST", "/campaign/StopLeadInCampaign", { campaignId, leadUrl: profileUrl });
+    return this.request("POST", "/campaign/StopLeadInCampaign", { CampaignId: campaignId, ProfileUrl: profileUrl });
   }
 
   // ─── List Management ───────────────────────────────────────────────
@@ -198,7 +222,19 @@ export class HeyReachClient {
 
   /** Add leads to a list (v2) */
   async addLeadsToListV2(input: AddLeadsToListV2Input) {
-    return this.request("POST", "/list/AddLeadsToListV2", input);
+    const body = {
+      ListId: input.listId,
+      Leads: input.leads.map((lead) => ({
+        ProfileUrl: lead.profileUrl,
+        FirstName: lead.firstName,
+        LastName: lead.lastName,
+        Email: lead.email,
+        Company: lead.company,
+        Position: lead.position,
+        CustomFields: lead.customFields,
+      })),
+    };
+    return this.request("POST", "/list/AddLeadsToListV2", body);
   }
 
   // ─── LinkedIn Account Management ──────────────────────────────────
