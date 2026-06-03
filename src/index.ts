@@ -263,14 +263,14 @@ server.tool(
 
 server.tool(
   "add_leads_to_campaign",
-  "Add leads to an ACTIVE campaign (v2). Leads are also added to the campaign's assigned lead list. Supports custom personalization fields.",
+  "Add leads to an ACTIVE campaign (v2). Leads are also added to the campaign's assigned lead list. Supports custom personalization fields. IMPORTANT: firstName is required — leads without it will be silently ignored by HeyReach.",
   {
     campaignId: z.number().describe("Target campaign ID (must be ACTIVE)"),
     leads: z
       .array(
         z.object({
-          profileUrl: z.string().optional().describe("LinkedIn profile URL (primary identifier)"),
-          firstName: z.string().optional(),
+          profileUrl: z.string().describe("LinkedIn profile URL (required, primary identifier)"),
+          firstName: z.string().describe("Lead's first name (required — leads without this are silently dropped)"),
           lastName: z.string().optional(),
           email: z.string().optional(),
           company: z.string().optional(),
@@ -371,14 +371,14 @@ server.tool(
 
 server.tool(
   "add_leads_to_list",
-  "Add leads to an existing list (v2)",
+  "Add leads to an existing list (v2). IMPORTANT: firstName is required — leads without it will be silently ignored by HeyReach.",
   {
     listId: z.number().describe("Target list ID"),
     leads: z
       .array(
         z.object({
-          profileUrl: z.string().optional().describe("LinkedIn profile URL"),
-          firstName: z.string().optional(),
+          profileUrl: z.string().describe("LinkedIn profile URL (required)"),
+          firstName: z.string().describe("Lead's first name (required — leads without this are silently dropped)"),
           lastName: z.string().optional(),
           email: z.string().optional(),
           company: z.string().optional(),
